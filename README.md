@@ -21,7 +21,7 @@ be displayed to anyone looking as a TextDisplay floating near the position that 
 
 # Permissions
 
-### damagedisplay.enabled  **( !! WIP !! )**
+### damagedisplay.enabled
 - Description: Enables the ActionBar messages for the player 
 - Default: True
 
