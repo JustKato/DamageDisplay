@@ -27,6 +27,10 @@ public class OnDamageHandler implements Listener {
         if ( e.getDamager().getType().equals(EntityType.PLAYER) ) {
             // Yoink a ref to the player
             Player p = (Player) e.getDamager();
+            // Permission check
+            if ( !p.hasPermission("damagedisplay.enabled") )
+                return;
+
             // Send out a Damage indicator to the player
             ActionBar.sendToPlayer(p, "★ Damage Dealt: " + ChatColor.YELLOW + Math.round(e.getDamage() * 100.0) / 100.0);
         }
@@ -35,6 +39,10 @@ public class OnDamageHandler implements Listener {
         if ( e.getDamager() instanceof Projectile a) {
             // Check if the player has dealt the damage
             if ( a.getShooter() instanceof Player p ) {
+                // Permission check
+                if ( !p.hasPermission("damagedisplay.enabled") )
+                    return;
+
                 // Send out a Damage indicator to the player
                 ActionBar.sendToPlayer(p, "★ Damage Dealt: " + ChatColor.YELLOW + Math.round(e.getDamage() * 100.0) / 100.0);
             }
@@ -51,6 +59,9 @@ public class OnDamageHandler implements Listener {
         // Check if the player has received the damage
         if ( e.getEntity().getType().equals(EntityType.PLAYER) ) {
             Player p = (Player) e.getEntity();
+            // Permission check
+            if ( !p.hasPermission("damagedisplay.enabled") )
+                return;
 
             // Send out the Damage indicator to the player
             ActionBar.sendToPlayer(p, "☠ Damage Taken: " + ChatColor.RED + receivedDamage + ChatColor.GRAY + " | " + ActionBar.parseStringToPretty(e.getCause().toString()) );
