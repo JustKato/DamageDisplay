@@ -1,0 +1,11 @@
+# The text that is being displayed at the bottom of the player's screen right above the hotbar
+actionbar:
+  damageDealt:
+    enabled: true # If the damage that the player dealt should be shown to the player
+  damageReceived:
+    enabled: true # If the damage that the player has sustained should be shown to the player
+
+# The text that spawns whenever an entity is hit
+displayText:
+  lingertime: 10 # The amount of time in ticks that the text should stay alive for, 20 = 1 second
+  enabled: true # Whether to display the floating DisplayText instances or not
