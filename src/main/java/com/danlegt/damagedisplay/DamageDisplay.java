@@ -19,6 +19,9 @@ public final class DamageDisplay extends JavaPlugin {
 
         // bStats Metrics
         RegisterMetrics();
+
+        // Save the default settings if they are not saved
+        DamageDisplay.me.saveDefaultConfig();
     }
 
     @Override
