@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
+import java.util.logging.Level;
 
 public class OnDamageHandler implements Listener {
 
@@ -22,6 +23,8 @@ public class OnDamageHandler implements Listener {
     public void onPlayerDamage(EntityDamageByEntityEvent e) {
         // Check if the event has already been cancelled
         if ( e.isCancelled() ) return;
+        // Check if this feature is enabled in the config
+        if ( !DamageDisplay.me.getConfig().getBoolean("actionbar.damageDealt.enabled") ) return;
 
         // Check if the player has dealt the damage
         if ( e.getDamager().getType().equals(EntityType.PLAYER) ) {
@@ -57,7 +60,7 @@ public class OnDamageHandler implements Listener {
         var receivedDamage = (Math.round(e.getDamage() * 100.0) / 100.0);
 
         // Check if the player has received the damage
-        if ( e.getEntity().getType().equals(EntityType.PLAYER) ) {
+        if ( e.getEntity().getType().equals(EntityType.PLAYER) && DamageDisplay.me.getConfig().getBoolean("actionbar.damageReceived.enabled") ) {
             Player p = (Player) e.getEntity();
             // Permission check
             if ( !p.hasPermission("damagedisplay.enabled") )
@@ -67,22 +70,29 @@ public class OnDamageHandler implements Listener {
             ActionBar.sendToPlayer(p, "☠ Damage Taken: " + ChatColor.RED + receivedDamage + ChatColor.GRAY + " | " + ActionBar.parseStringToPretty(e.getCause().toString()) );
         }
 
-        var rand = new Random();
-
-        Location loc = e.getEntity().getLocation().clone();
-        loc.add(new Vector(.05 * (rand.nextBoolean() ? -1 : 0), 1.5f, .05 * (rand.nextBoolean() ? -1 : 0)));
-
-        TextDisplay textDisplay = e.getEntity().getWorld().spawn(loc, TextDisplay.class);
-        textDisplay.setText(ChatColor.RED.toString() + receivedDamage);
-        textDisplay.setBillboard(Display.Billboard.VERTICAL);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                textDisplay.remove();
+        if ( DamageDisplay.me.getConfig().getBoolean("displayText.enabled") ) {
+            var rand = new Random();
+            var lingertime = DamageDisplay.me.getConfig().getInt("displayText.lingertime");
+            // Do not allow the linger time be less than 1
+            if ( lingertime <= 0 ) {
+                DamageDisplay.me.getServer().getLogger().log(Level.WARNING, "The configured linger time ahs been set to be equal or lower than 0, please add at least 1 tick to the linger time. If your intention was to disable the displayText please use displayText.enabled = false");
+                lingertime = 1;
             }
-        }.runTaskLater(DamageDisplay.me, 10);
 
+            Location loc = e.getEntity().getLocation().clone();
+            loc.add(new Vector(.05 * (rand.nextBoolean() ? -1 : 0), 1.5f, .05 * (rand.nextBoolean() ? -1 : 0)));
+
+            TextDisplay textDisplay = e.getEntity().getWorld().spawn(loc, TextDisplay.class);
+            textDisplay.setText(ChatColor.RED.toString() + receivedDamage);
+            textDisplay.setBillboard(Display.Billboard.VERTICAL);
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    textDisplay.remove();
+                }
+            }.runTaskLater(DamageDisplay.me, lingertime);
+        }
     }
 
 }
