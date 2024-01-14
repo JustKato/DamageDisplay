@@ -24,9 +24,9 @@ public class InfoCommand implements DDCommand{
         }
 
         FileConfiguration config = DamageDisplay.me.getConfig();
-        sender.sendMessage(ChatColor.GREEN + "DamageDisplay Configuration:");
+        sender.sendMessage(ChatColor.GREEN + "DamageDisplay (" + ChatColor.AQUA + DamageDisplay.me.getDescription().getVersion() + ChatColor.GREEN + ")");
         for (String key : config.getKeys(true)) {
-            sender.sendMessage(ChatColor.AQUA + key + ": " + Objects.requireNonNull(config.get(key)));
+            sender.sendMessage(ChatColor.GOLD + key + ChatColor.GRAY + ": " + ChatColor.WHITE + Objects.requireNonNull(config.get(key)));
         }
 
         return true;
