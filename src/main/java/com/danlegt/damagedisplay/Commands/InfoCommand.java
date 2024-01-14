@@ -29,7 +29,7 @@ public class InfoCommand implements DDCommand{
             sender.sendMessage(ChatColor.AQUA + key + ": " + Objects.requireNonNull(config.get(key)));
         }
 
-        return false;
+        return true;
     }
 
     @Override
