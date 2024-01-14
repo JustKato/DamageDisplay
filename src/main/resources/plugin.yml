@@ -6,13 +6,24 @@ prefix: DamageDisplay
 authors: [Daniel Legt <contact@danlegt.com>]
 description: "A simple and efficient plugin for displaying damage events"
 website: https://danlegt.com
+commands:
+  dd:
+    description: "Main command for DamageDisplay"
+    usage: "/<command> <info|help|toggle|reload>"
+    aliases: [damagedisplay]
 permissions:
   damagedisplay.enabled:
     default: true
     description: "Grants permission to view ActionBar messages to a user"
   damagedisplay.command.info:
     default: false
-    description: "Grants permission to /damagedisplay info to show information about the plugin"
+    description: "Grants permission to /dd info to show information about the plugin"
   damagedisplay.command.toggle:
+    default: true
+    description: "Grants permission to /dd toggle which enables or disables the ActionBar messages"
+  damagedisplay.command.reload:
     default: false
-    description: "Grants permission to /damagedisplay toggle which enables or disables the ActionBar messages"
+    description: "Grants permission to /dd reload which will reload the configuration file, so you won't have to reload it"
+  damagedisplay.command.help:
+    default: false
+    description: "Grants permission to /dd help"
