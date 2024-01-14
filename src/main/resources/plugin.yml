@@ -9,7 +9,7 @@ website: https://danlegt.com
 commands:
   dd:
     description: "Main command for DamageDisplay"
-    usage: "/<command> <info|toggle|reload>"
+    usage: "/<command> <info|help|toggle|reload>"
     aliases: [damagedisplay]
 permissions:
   damagedisplay.enabled:

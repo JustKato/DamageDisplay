@@ -9,4 +9,6 @@ public interface DDCommand {
 
     public boolean handleCommand(CommandSender sender, Command command, String label, String[] args);
 
+    public String getDescription();
+
 }

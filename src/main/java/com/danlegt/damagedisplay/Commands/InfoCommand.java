@@ -32,4 +32,9 @@ public class InfoCommand implements DDCommand{
         return false;
     }
 
+    @Override
+    public String getDescription() {
+        return "Retrieve information about the plugin";
+    }
+
 }
