@@ -1,15 +1,17 @@
 package com.danlegt.damagedisplay.Commands;
 
+import com.danlegt.damagedisplay.DamageDisplay;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ToggleCommand implements DDCommand {
 
-    public static List<Player> disabledPlayers = List.of();
+    public static List<Player> disabledPlayers = new ArrayList<>();
 
     @Override
     public String getCommandLabel() {
@@ -28,10 +30,12 @@ public class ToggleCommand implements DDCommand {
             return true;
         }
 
-        if ( disabledPlayers.contains(player) ) {
-            disabledPlayers.remove(player);
+        if ( ToggleCommand.disabledPlayers.contains(player) ) {
+            sender.sendMessage("Action bar messages toggled " + ChatColor.GREEN + "ON");
+            ToggleCommand.disabledPlayers.remove(player);
         } else {
-            disabledPlayers.add(player);
+            sender.sendMessage("Action bar messages toggled " + ChatColor.RED + "OFF");
+            ToggleCommand.disabledPlayers.add(player);
         }
 
         return true;

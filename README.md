@@ -25,13 +25,21 @@ be displayed to anyone looking as a TextDisplay floating near the position that 
 - Description: Enables the ActionBar messages for the player 
 - Default: True
 
-### damagedisplay.command.info  **( !! WIP !! )**
+### damagedisplay.command.info
 - Description: Enables the ActionBar messages for the player
 - Default: True
 
-### damagedisplay.command.toggle  **( !! WIP !! )**
+### damagedisplay.command.toggle
 - Description: Enables the ActionBar messages for the player
 - Default: True
+
+### damagedisplay.command.reload
+- Description: Grants permission to /dd reload which will reload the configuration file, so you won't have to reload it
+- Default: False
+
+### damagedisplay.command.help
+- Description: Grants permission to /dd help
+- Default: False
 
 # Support & Contribution
 In regard to possible bugs that might show up, please open an issue on the [Github Repository](https://github.com/JustKato/DamageDisplay).

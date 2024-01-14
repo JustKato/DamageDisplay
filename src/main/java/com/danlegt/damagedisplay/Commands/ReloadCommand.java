@@ -13,10 +13,15 @@ public class ReloadCommand implements DDCommand {
 
     @Override
     public boolean handleCommand(CommandSender sender, Command command, String label, String[] args) {
+        if ( !sender.hasPermission("damagedisplay.command.reload") ) {
+            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            return true;
+        }
+
         sender.sendMessage(ChatColor.GREEN + "Configuration reloaded.");
         DamageDisplay.me.reloadConfig();
 
-        return false;
+        return true;
     }
 
     @Override
