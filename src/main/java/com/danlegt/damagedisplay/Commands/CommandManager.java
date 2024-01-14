@@ -12,7 +12,9 @@ public class CommandManager implements CommandExecutor {
 
     public static List<DDCommand> registeredCommands = List.of(
         new InfoCommand(),
-        new ToggleCommand()
+        new ToggleCommand(),
+        new HelpCommand(),
+        new ReloadCommand()
     );
 
     @Override
