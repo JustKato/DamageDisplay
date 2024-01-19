@@ -3,7 +3,6 @@ package com.danlegt.damagedisplay.Event.EventListeners;
 import com.danlegt.damagedisplay.Commands.ToggleCommand;
 import com.danlegt.damagedisplay.DamageDisplay;
 import com.danlegt.damagedisplay.Services.ActionBar;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.*;
@@ -33,7 +32,7 @@ public class OnDamageHandler implements Listener {
             Player p = (Player) e.getDamager();
 
             // Toggle Setting check
-            if (ToggleCommand.disabledPlayers.contains(p)) return;
+            if (ToggleCommand.disabledPlayers.contains(p.getUniqueId())) return;
 
             // Permission check
             if ( !p.hasPermission("damagedisplay.enabled") )
@@ -52,7 +51,7 @@ public class OnDamageHandler implements Listener {
                     return;
 
                 // Toggle Setting check
-                if (ToggleCommand.disabledPlayers.contains(p)) return;
+                if (ToggleCommand.disabledPlayers.contains(p.getUniqueId())) return;
 
                 // Send out a Damage indicator to the player
                 ActionBar.sendToPlayer(p, "★ Damage Dealt: " + ChatColor.YELLOW + Math.round(e.getDamage() * 100.0) / 100.0);
@@ -75,7 +74,7 @@ public class OnDamageHandler implements Listener {
                 return;
 
             // Toggle Setting check
-            if (ToggleCommand.disabledPlayers.contains(p)) return;
+            if (ToggleCommand.disabledPlayers.contains(p.getUniqueId())) return;
 
             // Send out the Damage indicator to the player
             ActionBar.sendToPlayer(p, "☠ Damage Taken: " + ChatColor.RED + receivedDamage + ChatColor.GRAY + " | " + ActionBar.parseStringToPretty(e.getCause().toString()) );
