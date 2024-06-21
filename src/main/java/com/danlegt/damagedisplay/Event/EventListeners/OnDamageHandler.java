@@ -3,7 +3,7 @@ package com.danlegt.damagedisplay.Event.EventListeners;
 import com.danlegt.damagedisplay.Commands.ToggleCommand;
 import com.danlegt.damagedisplay.DamageDisplay;
 import com.danlegt.damagedisplay.Services.ActionBar;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -89,11 +90,23 @@ public class OnDamageHandler implements Listener {
                 lingertime = 1;
             }
 
+            String damagePrefix = ChatColor.RED.toString();
+
+            if (e instanceof EntityDamageByEntityEvent damageByEntityEvent ) {
+                if (damageByEntityEvent.getDamager() instanceof Player) {
+                    Player damager = (Player) damageByEntityEvent.getDamager();
+                    // Check if the damage is a critical hit
+                    if (damager.getFallDistance() > 0.0f && !damager.isOnGround() && !damager.isInWater() && !damager.isInsideVehicle() && !damager.hasPotionEffect(PotionEffectType.BLINDNESS)) {
+                        damagePrefix = ChatColor.GOLD + "✴";
+                    }
+                }
+            }
+
             Location loc = e.getEntity().getLocation().clone();
             loc.add(new Vector(.05 * (rand.nextBoolean() ? -1 : 0), 1.5f, .05 * (rand.nextBoolean() ? -1 : 0)));
 
             TextDisplay textDisplay = e.getEntity().getWorld().spawn(loc, TextDisplay.class);
-            textDisplay.setText(ChatColor.RED.toString() + receivedDamage);
+            textDisplay.setText(damagePrefix + receivedDamage);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
 
             new BukkitRunnable() {
