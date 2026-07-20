@@ -11,8 +11,13 @@ public class HelpCommand implements DDCommand {
     }
 
     @Override
+    public String getPermission() {
+        return "damagedisplay.command.help";
+    }
+
+    @Override
     public boolean handleCommand(CommandSender sender, Command command, String label, String[] args) {
-        if ( !sender.hasPermission("damagedisplay.command.help") ) {
+        if ( !sender.hasPermission(getPermission()) ) {
             sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }

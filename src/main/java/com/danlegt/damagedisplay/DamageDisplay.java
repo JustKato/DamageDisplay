@@ -30,7 +30,9 @@ public final class DamageDisplay extends JavaPlugin {
         // Save the default settings if they are not saved
         this.saveDefaultConfig();
         this.settings.reload();
-        this.getCommand("dd").setExecutor(new CommandManager());
+        CommandManager commandManager = new CommandManager();
+        this.getCommand("dd").setExecutor(commandManager);
+        this.getCommand("dd").setTabCompleter(commandManager);
 
         // Load the toggle command cache
         ToggleCommand.loadToggleCache();

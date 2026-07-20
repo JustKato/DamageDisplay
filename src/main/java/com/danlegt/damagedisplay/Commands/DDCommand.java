@@ -5,10 +5,12 @@ import org.bukkit.command.CommandSender;
 
 public interface DDCommand {
 
-    public String getCommandLabel();
+    String getCommandLabel();
 
-    public boolean handleCommand(CommandSender sender, Command command, String label, String[] args);
+    String getPermission();
 
-    public String getDescription();
+    boolean handleCommand(CommandSender sender, Command command, String label, String[] args);
+
+    String getDescription();
 
 }

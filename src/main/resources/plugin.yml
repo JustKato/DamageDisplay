@@ -16,14 +16,14 @@ permissions:
     default: true
     description: "Grants permission to view ActionBar messages to a user"
   damagedisplay.command.info:
-    default: false
+    default: op
     description: "Grants permission to /dd info to show information about the plugin"
   damagedisplay.command.toggle:
     default: true
     description: "Grants permission to /dd toggle which enables or disables the ActionBar messages"
   damagedisplay.command.reload:
-    default: false
+    default: op
     description: "Grants permission to /dd reload which will reload the configuration file, so you won't have to reload it"
   damagedisplay.command.help:
-    default: false
+    default: op
     description: "Grants permission to /dd help"

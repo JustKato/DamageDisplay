@@ -26,8 +26,13 @@ public class ToggleCommand implements DDCommand {
     }
 
     @Override
+    public String getPermission() {
+        return "damagedisplay.command.toggle";
+    }
+
+    @Override
     public boolean handleCommand(CommandSender sender, Command command, String label, String[] args) {
-        if ( !sender.hasPermission("damagedisplay.command.toggle") ) {
+        if ( !sender.hasPermission(getPermission()) ) {
             sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }
