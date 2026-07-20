@@ -1,7 +1,7 @@
 name: DamageDisplay
 version: '${project.version}'
 main: com.danlegt.damagedisplay.DamageDisplay
-api-version: '1.20'
+api-version: '26.2'
 prefix: DamageDisplay
 authors: [Daniel Legt <contact@danlegt.com>]
 description: "A simple and efficient plugin for displaying damage events"
