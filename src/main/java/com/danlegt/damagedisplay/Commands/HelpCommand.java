@@ -1,6 +1,6 @@
 package com.danlegt.damagedisplay.Commands;
 
-import org.bukkit.ChatColor;
+import com.danlegt.damagedisplay.Services.Messages;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -17,16 +17,18 @@ public class HelpCommand implements DDCommand {
 
     @Override
     public boolean handleCommand(CommandSender sender, Command command, String label, String[] args) {
-        if ( !sender.hasPermission(getPermission()) ) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+        if (!sender.hasPermission(getPermission())) {
+            sender.sendMessage(Messages.toLegacy("&cYou do not have permission to use this command."));
             return true;
         }
 
-        sender.sendMessage(ChatColor.GRAY + "====================");
-        CommandManager.registeredCommands.forEach( cmd -> {
-            sender.sendMessage(ChatColor.GOLD + "/dd " + cmd.getCommandLabel() + ChatColor.GRAY + " - " + ChatColor.RESET + cmd.getDescription());
+        sender.sendMessage(Messages.toLegacy("&8===================="));
+        CommandManager.registeredCommands.forEach(cmd -> {
+            if (sender.hasPermission(cmd.getPermission())) {
+                sender.sendMessage(Messages.toLegacy("&6/dd " + cmd.getCommandLabel() + " &7- &f" + cmd.getDescription()));
+            }
         });
-        sender.sendMessage(ChatColor.GRAY + "====================");
+        sender.sendMessage(Messages.toLegacy("&8===================="));
 
         return true;
     }

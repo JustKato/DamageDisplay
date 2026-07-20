@@ -1,82 +1,82 @@
 package com.danlegt.damagedisplay.Event.EventListeners;
 
-import com.danlegt.damagedisplay.Commands.ToggleCommand;
 import com.danlegt.damagedisplay.DamageDisplay;
 import com.danlegt.damagedisplay.Services.ActionBar;
-import com.danlegt.damagedisplay.Services.DisplayTracker;
+import com.danlegt.damagedisplay.Services.HologramService;
+import com.danlegt.damagedisplay.Services.Messages;
+import com.danlegt.damagedisplay.Services.PlayerPrefs;
 import com.danlegt.damagedisplay.Services.PluginSettings;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Map;
 
 public class OnDamageHandler implements Listener {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDamage(EntityDamageByEntityEvent e) {
-        if (e.isCancelled()) return;
-
         PluginSettings settings = DamageDisplay.me.getSettings();
-        if (!settings.isActionBarDamageDealtEnabled()) return;
-
-        if (e.getDamager().getType() == EntityType.PLAYER) {
-            Player p = (Player) e.getDamager();
-
-            if (ToggleCommand.disabledPlayers.contains(p.getUniqueId())) return;
-
-            if (!p.hasPermission("damagedisplay.enabled"))
-                return;
-
-            ActionBar.sendToPlayer(p, "★ Damage Dealt: " + ChatColor.YELLOW + Math.round(e.getDamage() * 100.0) / 100.0);
-        }
-
-        if (e.getDamager() instanceof Projectile a) {
-            if (a.getShooter() instanceof Player p) {
-                if (!p.hasPermission("damagedisplay.enabled"))
-                    return;
-
-                if (ToggleCommand.disabledPlayers.contains(p.getUniqueId())) return;
-
-                ActionBar.sendToPlayer(p, "★ Damage Dealt: " + ChatColor.YELLOW + Math.round(e.getDamage() * 100.0) / 100.0);
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onEnvironmentDamage(EntityDamageEvent e) {
-        if (e.isCancelled()) return;
-
-        PluginSettings settings = DamageDisplay.me.getSettings();
-        var receivedDamage = (Math.round(e.getDamage() * 100.0) / 100.0);
-
-        if (e.getEntity().getType() == EntityType.PLAYER && settings.isActionBarDamageReceivedEnabled()) {
-            Player p = (Player) e.getEntity();
-            if (!p.hasPermission("damagedisplay.enabled"))
-                return;
-
-            if (ToggleCommand.disabledPlayers.contains(p.getUniqueId())) return;
-
-            ActionBar.sendToPlayer(p, "☠ Damage Taken: " + ChatColor.RED + receivedDamage + ChatColor.GRAY + " | " + ActionBar.parseStringToPretty(e.getCause()));
-        }
-
-        if (!settings.isDisplayTextEnabled()) {
+        PlayerPrefs prefs = DamageDisplay.me.getPlayerPrefs();
+        if (!settings.isActionBarDamageDealtEnabled()) {
             return;
         }
 
-        Location entityLoc = e.getEntity().getLocation();
-        DisplayTracker tracker = DamageDisplay.me.getDisplayTracker();
-        if (!tracker.canSpawn(entityLoc.getChunk(), settings)) {
+        double damage = e.getFinalDamage();
+        String formatted = Messages.format(settings.getActionBarDamageDealtFormat(), Map.of(
+                "damage", Messages.roundDamage(damage)
+        ));
+
+        if (e.getDamager().getType() == EntityType.PLAYER) {
+            Player p = (Player) e.getDamager();
+            if (!prefs.isActionBarEnabled(p.getUniqueId())) {
+                return;
+            }
+            if (!p.hasPermission("damagedisplay.enabled")) {
+                return;
+            }
+            ActionBar.sendToPlayer(p, formatted);
+        }
+
+        if (e.getDamager() instanceof Projectile projectile && projectile.getShooter() instanceof Player p) {
+            if (!p.hasPermission("damagedisplay.enabled")) {
+                return;
+            }
+            if (!prefs.isActionBarEnabled(p.getUniqueId())) {
+                return;
+            }
+            ActionBar.sendToPlayer(p, formatted);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEnvironmentDamage(EntityDamageEvent e) {
+        PluginSettings settings = DamageDisplay.me.getSettings();
+        PlayerPrefs prefs = DamageDisplay.me.getPlayerPrefs();
+        double damage = e.getFinalDamage();
+        String damageText = Messages.roundDamage(damage);
+
+        if (e.getEntity().getType() == EntityType.PLAYER && settings.isActionBarDamageReceivedEnabled()) {
+            Player p = (Player) e.getEntity();
+            if (p.hasPermission("damagedisplay.enabled") && prefs.isActionBarEnabled(p.getUniqueId())) {
+                String formatted = Messages.format(settings.getActionBarDamageReceivedFormat(), Map.of(
+                        "damage", damageText,
+                        "cause", ActionBar.parseStringToPretty(e.getCause())
+                ));
+                ActionBar.sendToPlayer(p, formatted);
+            }
+        }
+
+        if (!settings.isDisplayTextEnabled()) {
             return;
         }
 
@@ -84,53 +84,25 @@ public class OnDamageHandler implements Listener {
             return;
         }
 
-        double nearbyRange = settings.getNearbyRange();
-        Collection<Player> nearbyPlayers = Collections.emptyList();
-        if (nearbyRange > 0) {
-            nearbyPlayers = getNearbyPlayers(entityLoc, nearbyRange);
-            if (nearbyPlayers.isEmpty()) {
-                return;
-            }
+        Location entityLoc = e.getEntity().getLocation();
+        Collection<Player> viewers = HologramService.getPermittedNearbyPlayers(entityLoc, settings.getNearbyRange());
+        if (viewers.isEmpty()) {
+            return;
         }
 
-        ThreadLocalRandom rand = ThreadLocalRandom.current();
-        String damagePrefix = ChatColor.RED.toString();
-
-        if (e instanceof EntityDamageByEntityEvent damageByEntityEvent) {
-            if (damageByEntityEvent.getDamager() instanceof Player damager) {
-                if (damager.getFallDistance() > 0.0f && !damager.isOnGround() && !damager.isInWater() && !damager.isInsideVehicle() && !damager.hasPotionEffect(PotionEffectType.BLINDNESS)) {
-                    damagePrefix = ChatColor.GOLD + "✴";
-                }
-            }
+        boolean crit = false;
+        if (e instanceof EntityDamageByEntityEvent damageByEntityEvent
+                && damageByEntityEvent.getDamager() instanceof Player damager) {
+            crit = damager.getFallDistance() > 0.0f
+                    && !damager.isOnGround()
+                    && !damager.isInWater()
+                    && !damager.isInsideVehicle()
+                    && !damager.hasPotionEffect(PotionEffectType.BLINDNESS);
         }
 
-        Location loc = entityLoc.clone();
-        loc.add(new Vector(.05 * (rand.nextBoolean() ? -1 : 0), 1.5f, .05 * (rand.nextBoolean() ? -1 : 0)));
-
-        TextDisplay textDisplay = e.getEntity().getWorld().spawn(loc, TextDisplay.class);
-        textDisplay.setText(damagePrefix + receivedDamage);
-        textDisplay.setBillboard(Display.Billboard.VERTICAL);
-
-        if (settings.isViewerScoped()) {
-            textDisplay.setVisibleByDefault(false);
-            Collection<Player> viewers = nearbyRange > 0
-                    ? nearbyPlayers
-                    : getNearbyPlayers(loc, 16);
-            for (Player viewer : viewers) {
-                viewer.showEntity(DamageDisplay.me, textDisplay);
-            }
-        }
-
-        tracker.trackAndScheduleRemoval(textDisplay, settings.getLingerTime());
-    }
-
-    private static Collection<Player> getNearbyPlayers(Location location, double range) {
-        Collection<Entity> nearby = location.getWorld().getNearbyEntities(location, range, range, range, entity -> entity instanceof Player);
-        Collection<Player> players = new ArrayList<>(nearby.size());
-        for (Entity entity : nearby) {
-            players.add((Player) entity);
-        }
-        return players;
+        String template = crit ? settings.getCritFormat() : settings.getDisplayFormat();
+        String legacy = Messages.formatLegacy(template, Map.of("damage", damageText));
+        HologramService.spawn(entityLoc, legacy, viewers, settings);
     }
 
     private static boolean isPlayerCaused(EntityDamageEvent e) {

@@ -1,49 +1,116 @@
 # Damage Display
+
 ![Logo](./media/logo.png)
 
-A Minecraft Spigot plugin that offers the possibility to keep track of damage dealt and received.
+Spigot plugin that shows combat feedback: floating damage/heal numbers and action bar messages.
 
-# Features
-![Damage Example Showcase](./media/damage_01.png)
- - Show a [TextDisplay](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/TextDisplay.html) whenever an entity takes damage
- - Send out ActionBar messages to players in regard to damage that has been taken.
- - Display an ActionBar message whenever a player has dealt an amount of damage to an entity.
+Requires **Java 21+** and a **26.2** Spigot-compatible server (`api-version: 26.2`).
 
-# Installation
-1. Download the latest version of the DamageDisplay plugin
-2. Place the downloaded `.jar` file inside of your server's plugins directory
-3. Restart your server
+## Features
 
-# Usage
-Whenever a player is going to take or deal an amount of damage, an ActionBar message is automatically going to be
-shown to the player in question. There is also another case when an entity takes an amount of damage, that damage will
-be displayed to anyone looking as a TextDisplay floating near the position that the damage has been taken at.
+- Floating `TextDisplay` holograms on damage (optional heal holograms)
+- Action bar for damage dealt and damage taken
+- Uses **final damage** (after armor/resistance), not raw damage
+- Configurable `&` color formats, TextDisplay style, and rise motion
+- Nearby-player gate, concurrent caps, viewer scoping
+- `/dd toggle [actionbar|heals]` per-player preferences (YAML)
+- GitHub Actions: PR tests + `v*` tag releases
 
-# Permissions
+## Installation
 
-### damagedisplay.enabled
-- Description: Enables the ActionBar messages for the player 
-- Default: True
+1. Download the latest release jar (or build with Maven)
+2. Put it in your server `plugins/` folder
+3. Restart the server
+4. Edit `plugins/DamageDisplay/config.yml` and run `/dd reload`
 
-### damagedisplay.command.info
-- Description: Enables the ActionBar messages for the player
-- Default: True
+## Commands
 
-### damagedisplay.command.toggle
-- Description: Enables the ActionBar messages for the player
-- Default: True
+| Command | Permission | Description |
+|---------|------------|-------------|
+| `/dd help` | `damagedisplay.command.help` | List commands you can use |
+| `/dd info` | `damagedisplay.command.info` | Show plugin version and config keys |
+| `/dd toggle` | `damagedisplay.command.toggle` | Toggle action bar (same as `actionbar`) |
+| `/dd toggle actionbar` | `damagedisplay.command.toggle` | Toggle action bar messages |
+| `/dd toggle heals` | `damagedisplay.command.toggle` | Toggle heal holograms for yourself |
+| `/dd reload` | `damagedisplay.command.reload` | Reload config and player prefs |
 
-### damagedisplay.command.reload
-- Description: Grants permission to /dd reload which will reload the configuration file, so you won't have to reload it
-- Default: False
+Aliases: `/damagedisplay`
 
-### damagedisplay.command.help
-- Description: Grants permission to /dd help
-- Default: False
+## Permissions
 
-# Support & Contribution
-In regard to possible bugs that might show up, please open an issue on the [Github Repository](https://github.com/JustKato/DamageDisplay).
-Contributions are more than welcome! Fork the repository, make your changes and submit a pull request.
+| Permission | Default | Description |
+|------------|---------|-------------|
+| `damagedisplay.enabled` | true | See action bars and holograms |
+| `damagedisplay.command.toggle` | true | Use `/dd toggle` |
+| `damagedisplay.command.help` | op | Use `/dd help` |
+| `damagedisplay.command.info` | op | Use `/dd info` |
+| `damagedisplay.command.reload` | op | Use `/dd reload` |
 
-# License
-This project is licensed under the [MIT License](./LICENSE)
+## Configuration
+
+`plugins/DamageDisplay/config.yml` (defaults below). Colors use legacy `&` codes. Placeholders: `{damage}`, `{cause}`, `{amount}`.
+
+```yaml
+actionbar:
+  damageDealt:
+    enabled: true
+    format: "&e★ Damage Dealt: &e{damage}"
+  damageReceived:
+    enabled: true
+    format: "&c☠ Damage Taken: &c{damage}&7 | &7{cause}"
+
+displayText:
+  enabled: true
+  lingertime: 10
+  nearbyRange: 16
+  onlyFromPlayers: false
+  maxTotal: 64
+  maxPerChunk: 8
+  viewerScoped: true
+  format: "&c{damage}"
+  critFormat: "&6✴{damage}"
+  billboard: VERTICAL
+  shadow: true
+  seeThrough: false
+  background: true
+  textOpacity: 255
+  scale: 1.0
+  motion:
+    enabled: true
+    riseBlocks: 0.6
+
+heals:
+  enabled: false
+  format: "&a+{amount}"
+```
+
+Player toggles are stored in `plugins/DamageDisplay/player-prefs.yml`. An old `cache.dat` is migrated automatically on first load.
+
+## Build
+
+```bash
+mvn clean package
+```
+
+Jar: `target/DamageDisplay-<version>.jar`
+
+Tests: `mvn test`
+
+## Releases
+
+Push a tag on `master`:
+
+```bash
+git tag v1.2.0
+git push origin v1.2.0
+```
+
+CI runs tests, sets the Maven version from the tag, and publishes the jar on GitHub Releases.
+
+## Support
+
+Bugs and PRs: [GitHub repository](https://github.com/JustKato/DamageDisplay).
+
+## License
+
+[MIT License](./LICENSE)

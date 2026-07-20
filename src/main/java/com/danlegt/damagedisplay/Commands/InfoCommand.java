@@ -1,15 +1,12 @@
 package com.danlegt.damagedisplay.Commands;
 
 import com.danlegt.damagedisplay.DamageDisplay;
-import org.bukkit.ChatColor;
+import com.danlegt.damagedisplay.Services.Messages;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.List;
-import java.util.Objects;
-
-public class InfoCommand implements DDCommand{
+public class InfoCommand implements DDCommand {
 
     @Override
     public String getCommandLabel() {
@@ -23,25 +20,23 @@ public class InfoCommand implements DDCommand{
 
     @Override
     public boolean handleCommand(CommandSender sender, Command command, String label, String[] args) {
-        if ( !sender.hasPermission(getPermission()) ) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+        if (!sender.hasPermission(getPermission())) {
+            sender.sendMessage(Messages.toLegacy("&cYou do not have permission to use this command."));
             return true;
         }
 
         FileConfiguration config = DamageDisplay.me.getConfig();
-        sender.sendMessage(ChatColor.GREEN + "DamageDisplay (" + ChatColor.AQUA + DamageDisplay.me.getDescription().getVersion() + ChatColor.GREEN + ")");
+        sender.sendMessage(Messages.toLegacy(
+                "&aDamageDisplay (&b" + DamageDisplay.me.getDescription().getVersion() + "&a)"
+        ));
         for (String key : config.getKeys(true)) {
-            var val = config.get(key);
-            if ( val == null ) {
-                val = "";
+            Object val = config.get(key);
+            if (val == null) {
+                continue;
             }
 
-            if ( val instanceof Boolean v) {
-                val = v ? "True" : "False";
-            }
-
-            if ( val instanceof String || val instanceof Integer || val instanceof Float || val instanceof Double ) {
-                sender.sendMessage(ChatColor.GOLD + key + ChatColor.GRAY + ": " + ChatColor.WHITE + config.get(key));
+            if (val instanceof Boolean || val instanceof String || val instanceof Number) {
+                sender.sendMessage(Messages.toLegacy("&6" + key + "&7: &f" + val));
             }
         }
 
@@ -52,5 +47,4 @@ public class InfoCommand implements DDCommand{
     public String getDescription() {
         return "Retrieve information about the plugin";
     }
-
 }

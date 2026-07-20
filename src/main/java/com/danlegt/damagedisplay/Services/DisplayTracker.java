@@ -2,8 +2,12 @@ package com.danlegt.damagedisplay.Services;
 
 import com.danlegt.damagedisplay.DamageDisplay;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,8 +43,55 @@ public class DisplayTracker {
         perChunkCounts.merge(key, 1, Integer::sum);
     }
 
-    public void trackAndScheduleRemoval(TextDisplay display, int lingerTime) {
+    public void applyStyle(TextDisplay display, PluginSettings settings) {
+        display.setBillboard(settings.getBillboard());
+        display.setShadowed(settings.isShadow());
+        display.setSeeThrough(settings.isSeeThrough());
+        display.setDefaultBackground(settings.isBackground());
+        display.setTextOpacity(settings.getTextOpacity());
+
+        float scale = settings.getScale();
+        display.setTransformation(new Transformation(
+                new Vector3f(),
+                new AxisAngle4f(),
+                new Vector3f(scale, scale, scale),
+                new AxisAngle4f()
+        ));
+    }
+
+    public void trackAndScheduleRemoval(TextDisplay display, PluginSettings settings) {
         track(display);
+        int lingerTime = settings.getLingerTime();
+
+        if (settings.isMotionEnabled() && settings.getRiseBlocks() > 0 && lingerTime > 1) {
+            Location start = display.getLocation().clone();
+            double rise = settings.getRiseBlocks();
+
+            new BukkitRunnable() {
+                private int tick = 0;
+
+                @Override
+                public void run() {
+                    if (!display.isValid()) {
+                        cancel();
+                        remove(display);
+                        return;
+                    }
+
+                    tick++;
+                    if (tick >= lingerTime) {
+                        cancel();
+                        remove(display);
+                        return;
+                    }
+
+                    double progress = (double) tick / lingerTime;
+                    Location next = start.clone().add(0, rise * progress, 0);
+                    display.teleport(next);
+                }
+            }.runTaskTimer(DamageDisplay.me, 1L, 1L);
+            return;
+        }
 
         new BukkitRunnable() {
             @Override

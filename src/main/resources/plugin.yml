@@ -14,16 +14,16 @@ commands:
 permissions:
   damagedisplay.enabled:
     default: true
-    description: "Grants permission to view ActionBar messages to a user"
+    description: "Grants permission to view ActionBar messages and holograms"
   damagedisplay.command.info:
     default: op
-    description: "Grants permission to /dd info to show information about the plugin"
+    description: "Grants permission to /dd info"
   damagedisplay.command.toggle:
     default: true
-    description: "Grants permission to /dd toggle which enables or disables the ActionBar messages"
+    description: "Grants permission to /dd toggle [actionbar|heals]"
   damagedisplay.command.reload:
     default: op
-    description: "Grants permission to /dd reload which will reload the configuration file, so you won't have to reload it"
+    description: "Grants permission to /dd reload"
   damagedisplay.command.help:
     default: op
     description: "Grants permission to /dd help"

@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.11.4</junit.version>
         <mockito.version>5.20.0</mockito.version>
+        <adventure.version>4.21.0</adventure.version>
     </properties>
     <url>https://danlegt.com</url>
 
@@ -49,6 +50,10 @@
                         <relocation>
                             <pattern>org.bstats</pattern>
                             <shadedPattern>com.danlegt.util</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.kyori</pattern>
+                            <shadedPattern>com.danlegt.adventure</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -92,6 +97,18 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>3.0.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>${adventure.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-legacy</artifactId>
+            <version>${adventure.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
