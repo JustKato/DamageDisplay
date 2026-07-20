@@ -1,16 +1,51 @@
-# The text that is being displayed at the bottom of the player's screen right above the hotbar
+############################################################
+# DamageDisplay configuration
+# Colors use legacy & codes (&a, &c, &e, &7, &l, ...).
+# Placeholders: {damage} {cause} {amount}
+############################################################
+
+# ----------------------------------------------------------
+# Action bar (above the hotbar)
+# ----------------------------------------------------------
 actionbar:
   damageDealt:
-    enabled: true # If the damage that the player dealt should be shown to the player
+    enabled: true
+    format: "&e★ Damage Dealt: &e{damage}"
   damageReceived:
-    enabled: true # If the damage that the player has sustained should be shown to the player
+    enabled: true
+    format: "&c☠ Damage Taken: &c{damage}&7 | &7{cause}"
 
-# The text that spawns whenever an entity is hit
+# ----------------------------------------------------------
+# Floating TextDisplay holograms (damage)
+# ----------------------------------------------------------
 displayText:
-  lingertime: 10 # The amount of time in ticks that the text should stay alive for, 20 = 1 second
-  enabled: true # Whether to display the floating DisplayText instances or not
-  nearbyRange: 16 # Skip spawn if no player is within this distance; 0 disables the nearby-player gate
-  onlyFromPlayers: false # Only spawn when the damager (or projectile shooter) is a Player
-  maxTotal: 64 # Maximum concurrent TextDisplay entities globally
-  maxPerChunk: 8 # Maximum concurrent TextDisplay entities per chunk
-  viewerScoped: true # Hide displays by default and only show them to nearby players
+  enabled: true
+  lingertime: 10          # ticks (20 = 1 second); minimum 1
+  nearbyRange: 16         # skip if no players in range; 0 = disable gate
+  onlyFromPlayers: false  # only when a player (or their projectile) dealt the hit
+  maxTotal: 64            # global concurrent display cap (0 = unlimited)
+  maxPerChunk: 8          # per-chunk concurrent cap (0 = unlimited)
+  viewerScoped: true      # hide by default; show only to nearby permitted players
+
+  format: "&c{damage}"
+  critFormat: "&6✴{damage}"
+
+  # TextDisplay appearance
+  billboard: VERTICAL     # FIXED | VERTICAL | HORIZONTAL | CENTER
+  shadow: true
+  seeThrough: false
+  background: true
+  textOpacity: 255        # 0-255
+  scale: 1.0
+
+  # Float upward over the linger time
+  motion:
+    enabled: true
+    riseBlocks: 0.6
+
+# ----------------------------------------------------------
+# Healing holograms (same style/caps/motion as displayText)
+# ----------------------------------------------------------
+heals:
+  enabled: false
+  format: "&a+{amount}"

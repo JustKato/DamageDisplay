@@ -1,24 +1,13 @@
 package com.danlegt.damagedisplay.Commands;
 
 import com.danlegt.damagedisplay.DamageDisplay;
-import org.bukkit.ChatColor;
+import com.danlegt.damagedisplay.Services.Messages;
+import com.danlegt.damagedisplay.Services.PlayerPrefs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Level;
-
 public class ToggleCommand implements DDCommand {
-
-    public static Set<UUID> disabledPlayers = new HashSet<>();
-    // The file that we store all the player toggle command statuses to
-    private static final String CACHE_FILE = "cache.dat";
 
     @Override
     public String getCommandLabel() {
@@ -26,62 +15,46 @@ public class ToggleCommand implements DDCommand {
     }
 
     @Override
+    public String getPermission() {
+        return "damagedisplay.command.toggle";
+    }
+
+    @Override
     public boolean handleCommand(CommandSender sender, Command command, String label, String[] args) {
-        if ( !sender.hasPermission("damagedisplay.command.toggle") ) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+        if (!sender.hasPermission(getPermission())) {
+            sender.sendMessage(Messages.toLegacy("&cYou do not have permission to use this command."));
             return true;
         }
 
-        if ( !(sender instanceof Player player) ) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Messages.toLegacy("&cOnly players can use this command."));
             return true;
         }
 
-        UUID playerUUID = player.getUniqueId();
-        if ( ToggleCommand.disabledPlayers.contains(playerUUID) ) {
-            sender.sendMessage("Action bar messages toggled " + ChatColor.GREEN + "ON");
-            ToggleCommand.disabledPlayers.remove(playerUUID);
-        } else {
-            sender.sendMessage("Action bar messages toggled " + ChatColor.RED + "OFF");
-            ToggleCommand.disabledPlayers.add(playerUUID);
-        }
+        String target = args.length >= 2 ? args[1].toLowerCase() : "actionbar";
+        PlayerPrefs prefs = DamageDisplay.me.getPlayerPrefs();
 
-        // Update the toggles list
-        saveToggleCache();
+        switch (target) {
+            case "actionbar" -> {
+                boolean enabled = prefs.toggleActionBar(player.getUniqueId());
+                sender.sendMessage(Messages.toLegacy(
+                        enabled ? "&7Action bar messages toggled &aON" : "&7Action bar messages toggled &cOFF"
+                ));
+            }
+            case "heals" -> {
+                boolean enabled = prefs.toggleHeals(player.getUniqueId());
+                sender.sendMessage(Messages.toLegacy(
+                        enabled ? "&7Heal displays toggled &aON" : "&7Heal displays toggled &cOFF"
+                ));
+            }
+            default -> sender.sendMessage(Messages.toLegacy("&cUsage: /dd toggle [actionbar|heals]"));
+        }
 
         return true;
     }
 
     @Override
     public String getDescription() {
-        return "Toggle the actionbar message you receive whenever dealing/taking damage";
+        return "Toggle action bar messages or heal displays (/dd toggle [actionbar|heals])";
     }
-
-    private static void saveToggleCache() {
-        File dataFolder = DamageDisplay.me.getDataFolder();
-        if (!dataFolder.exists()) {
-            dataFolder.mkdirs();
-        }
-        File file = new File(dataFolder, CACHE_FILE);
-
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            oos.writeObject(new ArrayList<>(disabledPlayers));
-        } catch (IOException e) {
-            e.printStackTrace();
-            DamageDisplay.me.getLogger().log(Level.WARNING, "Could not save player toggle command cache: " + e.getMessage());
-        }
-    }
-
-    public static void loadToggleCache() {
-        File file = new File(DamageDisplay.me.getDataFolder(), CACHE_FILE);
-        if (file.exists()) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                disabledPlayers = new HashSet<>((List<UUID>) ois.readObject());
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-                DamageDisplay.me.getLogger().log(Level.WARNING, "Could not load player toggle command cache: " + e.getMessage());
-            }
-        }
-    }
-
 }

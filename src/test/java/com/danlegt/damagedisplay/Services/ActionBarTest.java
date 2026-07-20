@@ -11,16 +11,16 @@ class ActionBarTest {
 
     @Test
     void parseStringToPrettyFormatsUnderscoredEnumNames() {
-        assertEquals("Entity Attack ", ActionBar.parseStringToPretty("ENTITY_ATTACK"));
-        assertEquals("Fall ", ActionBar.parseStringToPretty("FALL"));
-        assertEquals("Projectile ", ActionBar.parseStringToPretty("PROJECTILE"));
+        assertEquals("Entity Attack", ActionBar.parseStringToPretty("ENTITY_ATTACK"));
+        assertEquals("Fall", ActionBar.parseStringToPretty("FALL"));
+        assertEquals("Projectile", ActionBar.parseStringToPretty("PROJECTILE"));
     }
 
     @Test
     void parseDamageCauseUsesPrecomputedMap() {
-        assertEquals("Entity Attack ", ActionBar.parseStringToPretty(EntityDamageEvent.DamageCause.ENTITY_ATTACK));
-        assertEquals("Fall ", ActionBar.parseStringToPretty(EntityDamageEvent.DamageCause.FALL));
-        assertEquals("Fire Tick ", ActionBar.parseStringToPretty(EntityDamageEvent.DamageCause.FIRE_TICK));
+        assertEquals("Entity Attack", ActionBar.parseStringToPretty(EntityDamageEvent.DamageCause.ENTITY_ATTACK));
+        assertEquals("Fall", ActionBar.parseStringToPretty(EntityDamageEvent.DamageCause.FALL));
+        assertEquals("Fire Tick", ActionBar.parseStringToPretty(EntityDamageEvent.DamageCause.FIRE_TICK));
     }
 
     @Test

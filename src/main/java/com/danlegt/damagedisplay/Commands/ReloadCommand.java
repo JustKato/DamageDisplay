@@ -1,7 +1,7 @@
 package com.danlegt.damagedisplay.Commands;
 
 import com.danlegt.damagedisplay.DamageDisplay;
-import org.bukkit.ChatColor;
+import com.danlegt.damagedisplay.Services.Messages;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -12,17 +12,22 @@ public class ReloadCommand implements DDCommand {
     }
 
     @Override
+    public String getPermission() {
+        return "damagedisplay.command.reload";
+    }
+
+    @Override
     public boolean handleCommand(CommandSender sender, Command command, String label, String[] args) {
-        if ( !sender.hasPermission("damagedisplay.command.reload") ) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+        if (!sender.hasPermission(getPermission())) {
+            sender.sendMessage(Messages.toLegacy("&cYou do not have permission to use this command."));
             return true;
         }
 
         DamageDisplay.me.reloadConfig();
         DamageDisplay.me.getSettings().reload();
-        ToggleCommand.loadToggleCache();
+        DamageDisplay.me.getPlayerPrefs().load();
 
-        sender.sendMessage(ChatColor.GREEN + "Configuration reloaded.");
+        sender.sendMessage(Messages.toLegacy("&aConfiguration reloaded."));
         return true;
     }
 

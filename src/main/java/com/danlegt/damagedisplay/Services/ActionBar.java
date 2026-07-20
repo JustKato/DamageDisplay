@@ -12,8 +12,9 @@ public class ActionBar {
 
     private static final Map<EntityDamageEvent.DamageCause, String> PRETTY_CAUSES = buildPrettyCauses();
 
-    public static void sendToPlayer(Player p, String msg) {
-        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(msg));
+    public static void sendToPlayer(Player player, String ampersandMessage) {
+        String legacy = Messages.toLegacy(ampersandMessage);
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(legacy));
     }
 
     public static String parseStringToPretty(EntityDamageEvent.DamageCause cause) {
@@ -28,11 +29,10 @@ public class ActionBar {
         for (int i = 0; i < words.length; i++) {
             words[i] = words[i].toLowerCase();
             words[i] = words[i].substring(0, 1).toUpperCase() + words[i].substring(1);
-
             output.append(words[i]).append(" ");
         }
 
-        return output.toString();
+        return output.toString().trim();
     }
 
     private static Map<EntityDamageEvent.DamageCause, String> buildPrettyCauses() {
