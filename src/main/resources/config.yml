@@ -9,3 +9,8 @@ actionbar:
 displayText:
   lingertime: 10 # The amount of time in ticks that the text should stay alive for, 20 = 1 second
   enabled: true # Whether to display the floating DisplayText instances or not
+  nearbyRange: 16 # Skip spawn if no player is within this distance; 0 disables the nearby-player gate
+  onlyFromPlayers: false # Only spawn when the damager (or projectile shooter) is a Player
+  maxTotal: 64 # Maximum concurrent TextDisplay entities globally
+  maxPerChunk: 8 # Maximum concurrent TextDisplay entities per chunk
+  viewerScoped: true # Hide displays by default and only show them to nearby players

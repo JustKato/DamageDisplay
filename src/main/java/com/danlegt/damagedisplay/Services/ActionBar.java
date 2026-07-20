@@ -1,25 +1,31 @@
 package com.danlegt.damagedisplay.Services;
 
-import com.danlegt.damagedisplay.DamageDisplay;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 public class ActionBar {
 
+    private static final Map<EntityDamageEvent.DamageCause, String> PRETTY_CAUSES = buildPrettyCauses();
+
     public static void sendToPlayer(Player p, String msg) {
-        // Get the server
-        Server server = DamageDisplay.me.getServer();
-        // Use the lower API to send the message
         p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(msg));
     }
 
-    public static String parseStringToPretty( String input ) {
+    public static String parseStringToPretty(EntityDamageEvent.DamageCause cause) {
+        String pretty = PRETTY_CAUSES.get(cause);
+        return pretty != null ? pretty : parseStringToPretty(cause.toString());
+    }
+
+    public static String parseStringToPretty(String input) {
         StringBuilder output = new StringBuilder();
         String[] words = input.split("_");
 
-        for ( int i = 0; i < words.length; i++ ) {
+        for (int i = 0; i < words.length; i++) {
             words[i] = words[i].toLowerCase();
             words[i] = words[i].substring(0, 1).toUpperCase() + words[i].substring(1);
 
@@ -29,4 +35,11 @@ public class ActionBar {
         return output.toString();
     }
 
+    private static Map<EntityDamageEvent.DamageCause, String> buildPrettyCauses() {
+        Map<EntityDamageEvent.DamageCause, String> causes = new EnumMap<>(EntityDamageEvent.DamageCause.class);
+        for (EntityDamageEvent.DamageCause cause : EntityDamageEvent.DamageCause.values()) {
+            causes.put(cause, parseStringToPretty(cause.toString()));
+        }
+        return causes;
+    }
 }

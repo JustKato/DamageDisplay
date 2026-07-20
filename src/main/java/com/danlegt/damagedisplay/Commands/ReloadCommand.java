@@ -19,6 +19,7 @@ public class ReloadCommand implements DDCommand {
         }
 
         DamageDisplay.me.reloadConfig();
+        DamageDisplay.me.getSettings().reload();
         ToggleCommand.loadToggleCache();
 
         sender.sendMessage(ChatColor.GREEN + "Configuration reloaded.");

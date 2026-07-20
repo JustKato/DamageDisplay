@@ -8,13 +8,15 @@ import org.bukkit.entity.Player;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class ToggleCommand implements DDCommand {
 
-    public static List<UUID> disabledPlayers = new ArrayList<>();
+    public static Set<UUID> disabledPlayers = new HashSet<>();
     // The file that we store all the player toggle command statuses to
     private static final String CACHE_FILE = "cache.dat";
 
@@ -74,7 +76,7 @@ public class ToggleCommand implements DDCommand {
         File file = new File(DamageDisplay.me.getDataFolder(), CACHE_FILE);
         if (file.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                disabledPlayers = new ArrayList<>((List<UUID>) ois.readObject());
+                disabledPlayers = new HashSet<>((List<UUID>) ois.readObject());
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
                 DamageDisplay.me.getLogger().log(Level.WARNING, "Could not load player toggle command cache: " + e.getMessage());
